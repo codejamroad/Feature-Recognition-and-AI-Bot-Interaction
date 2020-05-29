@@ -5,9 +5,9 @@ tf.disable_v2_behavior()
 import datetime
 import argparse
 
-detection_graph, sess = detector_utils.load_inference_graph()
-
 def detect_hands_create_boundingbox(input_path, display_frames = False):
+    detection_graph, sess = detector_utils.load_inference_graph()
+
     score_thresh = 0.2
     num_workers = 4
     queue_size = 5
@@ -22,7 +22,7 @@ def detect_hands_create_boundingbox(input_path, display_frames = False):
     # max number of hands we want to detect/track
     num_hands_detect = 1
 
-    cv2.namedWindow('Single-Threaded Detection', cv2.WINDOW_NORMAL)
+    #cv2.namedWindow('Single-Threaded Detection', cv2.WINDOW_NORMAL)
     ret, image_np = cap.read()
     processed_frames= []
 

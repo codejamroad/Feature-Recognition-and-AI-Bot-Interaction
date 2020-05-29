@@ -8,9 +8,7 @@ def start(testdata_path, enable_object_detection=False, framesToProcess = 100):
     frames = []
 
     if enable_object_detection:
-
         frames = hand_detector.detect_hands_create_boundingbox(testdata_path, display_frames= False)
-
     else:
         cap = cv2.VideoCapture(testdata_path)
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
