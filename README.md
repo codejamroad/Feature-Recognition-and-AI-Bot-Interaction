@@ -7,9 +7,7 @@ This file takes landmarks from csv file and annotates them on the video.
 
 the csv file format is as below:
 
-Column Content::
-
-
+Column Content:
 1      Source Video File name
        A string indicating the file name of the video being referenced.
        
