@@ -8,7 +8,7 @@ def zerolistmaker(n):
     listofzeros = [0] * n
     return listofzeros
 
-def calculate_points(input_frames, hand_side):
+def calculate_points(input_frames, hand_side, display= False):
 
     protoFile = "hand/pose_deploy.prototxt"
     weightsFile = "hand/pose_iter_102000.caffemodel"
@@ -42,19 +42,23 @@ def calculate_points(input_frames, hand_side):
                 if prob > threshold :
                     points.append(int(point[0]))
                     points.append(int(point[1]))
-                    #cv2.circle(frame, (int(point[0]), int(point[1])), 6, (0, 255, 255), thickness=-1, lineType=cv2.FILLED)
+                    if display:
+                        cv2.circle(frame, (int(point[0]), int(point[1])), 6, (0, 255, 255), thickness=-1, lineType=cv2.FILLED)
                 else :
                     points.append(0) #X
                     points.append(0) #Y
 
-                #Uncomment the below line to see output
-                #cv2.imshow('Output-Skeleton', frame)
-                #key = cv2.waitKey(1)
-                #if key == 27:
-                    #break
+                if display:
+                    cv2.imshow('Output-Skeleton', frame)
+                    key = cv2.waitKey(1)
+                    if key == 27:
+                        break
             if(hand_side):
                 points_to_csv =  zerolistmaker(40) + points
             else:
                 points_to_csv =  points + zerolistmaker(40) 
             writer.writerow(points_to_csv)
+
+            if display:
+                cv2.destroyAllWindows()
             print("Time Taken for frame {}  = {}".format(k, time.time() - t))

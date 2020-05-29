@@ -7,9 +7,8 @@ import argparse
 
 detection_graph, sess = detector_utils.load_inference_graph()
 
-def detect_hands_create_boundingbox(input_path, display_frames = 0):
+def detect_hands_create_boundingbox(input_path, display_frames = False):
     score_thresh = 0.2
-    fps = display
     num_workers = 4
     queue_size = 5
     
@@ -54,7 +53,7 @@ def detect_hands_create_boundingbox(input_path, display_frames = 0):
         elapsed_time = (datetime.datetime.now() - start_time).total_seconds()
         fps = num_frames / elapsed_time
 
-        if (display > 0):
+        if (display_frames):
             # Display FPS on frame
             if (fps > 0):
                 detector_utils.draw_fps_on_image("FPS : " + str(int(fps)),
