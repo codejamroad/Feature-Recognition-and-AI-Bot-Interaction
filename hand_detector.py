@@ -1,6 +1,5 @@
 from utils import detector_utils as detector_utils
 import cv2
-#import tensorflow as tf
 import tensorflow.compat.v1 as tf
 tf.disable_v2_behavior()
 import datetime
@@ -8,65 +7,12 @@ import argparse
 
 detection_graph, sess = detector_utils.load_inference_graph()
 
-def detect_hands_create_boundingbox(input_path):
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        '-sth',
-        '--scorethreshold',
-        dest='score_thresh',
-        type=float,
-        default=0.2,
-        help='Score threshold for displaying bounding boxes')
-    parser.add_argument(
-        '-fps',
-        '--fps',
-        dest='fps',
-        type=int,
-        default=0,
-        help='Show FPS on detection/display visualization')
-    parser.add_argument(
-        '-src',
-        '--source',
-        dest='video_source',
-        default=0,
-        help='Device index of the camera.')
-    parser.add_argument(
-        '-wd',
-        '--width',
-        dest='width',
-        type=int,
-        default=320,
-        help='Width of the frames in the video stream.')
-    parser.add_argument(
-        '-ht',
-        '--height',
-        dest='height',
-        type=int,
-        default=180,
-        help='Height of the frames in the video stream.')
-    parser.add_argument(
-        '-ds',
-        '--display',
-        dest='display',
-        type=int,
-        default=1,
-        help='Display the detected images using OpenCV. This reduces FPS')
-    parser.add_argument(
-        '-num-w',
-        '--num-workers',
-        dest='num_workers',
-        type=int,
-        default=4,
-        help='Number of workers.')
-    parser.add_argument(
-        '-q-size',
-        '--queue-size',
-        dest='queue_size',
-        type=int,
-        default=5,
-        help='Size of the queue.')
-    args = parser.parse_args()
-
+def detect_hands_create_boundingbox(input_path, display = 0):
+    score_thresh = 0.2
+    fps = display
+    num_workers = 4
+    queue_size = 5
+    
     cap = cv2.VideoCapture(input_path)
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
@@ -99,7 +45,7 @@ def detect_hands_create_boundingbox(input_path):
                                                         detection_graph, sess)
 
         # draw bounding boxes on frame
-        detector_utils.draw_box_on_image(num_hands_detect, args.score_thresh,
+        detector_utils.draw_box_on_image(num_hands_detect, score_thresh,
                                             scores, boxes, im_width, im_height,
                                             image_np)
 
@@ -108,9 +54,9 @@ def detect_hands_create_boundingbox(input_path):
         elapsed_time = (datetime.datetime.now() - start_time).total_seconds()
         fps = num_frames / elapsed_time
 
-        if (args.display > 0):
+        if (display > 0):
             # Display FPS on frame
-            if (args.fps > 0):
+            if (fps > 0):
                 detector_utils.draw_fps_on_image("FPS : " + str(int(fps)),
                                                     image_np)
 
@@ -124,4 +70,5 @@ def detect_hands_create_boundingbox(input_path):
             print("frames processed: ", num_frames, "elapsed time: ",
                     elapsed_time, "fps: ", str(int(fps)))
         processed_frames.append(image_np)
+    cv2.destroyAllWindows()
     return processed_frames
