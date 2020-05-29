@@ -1,6 +1,5 @@
 from keras.models import model_from_json
 import numpy as np 
-from keras.applications.inception_v3 import decode_predictions
 import pandas as pd
 from tqdm import tqdm 
 import csv
