@@ -92,24 +92,9 @@ model.fit(X_train, y_train, epochs=2, batch_size=10, verbose=2)
 _, accuracy = model.evaluate(X_test, y_test, batch_size=10, verbose=2)
 print(accuracy)
 
-df_org = pd.read_csv("three_fingers_dorsal.csv", header=None)
-#df_org = df_org.loc[:,4:]
-#df_org = df_org.iloc[250:300]
-#sample = df_org.iloc[1:]
-#for i in range(0,100):
- #   for j in range(40,80):
-  #      df_org[i,j] = 0
-#display(df_org)
-#sample = df_org.iloc[0:100,0:80]
-#display(sample)
-
-sample = np.array(df_org)
-display(sample)
-print(sample.shape)
-sample = sample.reshape(-1,80,1)
-
-predicted_classes = model.predict(sample, verbose=2)
-predicted_classes = np.round(predicted_classes)
-display(predicted_classes)
-
-print(np.argmax(predicted_classes))
+model_json = model.to_json()
+with open("model_cnn.json", "w") as json_file:
+    json_file.write(model_json)
+# serialize weights to HDF5
+model.save_weights("model_cnn.h5")
+print("Saved model to disk")

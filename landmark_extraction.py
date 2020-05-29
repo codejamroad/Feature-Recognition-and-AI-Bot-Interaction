@@ -9,7 +9,7 @@ def zerolistmaker(n):
     return listofzeros
 
 def calculate_points(input_frames, hand_side, display= False):
-
+    output_file= 'landmarks.csv'
     protoFile = "hand/pose_deploy.prototxt"
     weightsFile = "hand/pose_iter_102000.caffemodel"
     nPoints = 21
@@ -21,7 +21,7 @@ def calculate_points(input_frames, hand_side, display= False):
 
     k=0        
     #Start landmark extraction only on selected frames
-    with open('landmarks.csv', 'w', newline='') as file:
+    with open(output_file, 'w', newline='') as file:
         writer = csv.writer(file)
         for frame in input_frames:
             t = time.time()
@@ -62,3 +62,4 @@ def calculate_points(input_frames, hand_side, display= False):
             if display:
                 cv2.destroyAllWindows()
             print("Time Taken for frame {}  = {}".format(k, time.time() - t))
+    return output_file
