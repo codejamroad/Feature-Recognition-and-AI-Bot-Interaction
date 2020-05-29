@@ -54,8 +54,10 @@ def calculate_points(input_frames, hand_side, display= False):
                     if key == 27:
                         break
             if(hand_side):
+                print("hand side {}".format(hand_side))
                 points_to_csv =  zerolistmaker(40) + points
             else:
+                print("hand side {}".format(hand_side))
                 points_to_csv =  points + zerolistmaker(40) 
             writer.writerow(points_to_csv)
 
