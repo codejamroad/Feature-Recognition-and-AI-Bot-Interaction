@@ -7,7 +7,7 @@ import argparse
 
 detection_graph, sess = detector_utils.load_inference_graph()
 
-def detect_hands_create_boundingbox(input_path, display = 0):
+def detect_hands_create_boundingbox(input_path, display_frames = 0):
     score_thresh = 0.2
     fps = display
     num_workers = 4
