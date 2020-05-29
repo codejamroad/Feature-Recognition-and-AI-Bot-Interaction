@@ -47,36 +47,33 @@ def palm_dorsal_identifier(input_path):
                 scoresTensor = model.get_tensor_by_name("detection_scores:0")
                 classesTensor = model.get_tensor_by_name("detection_classes:0")
                 numDetections = model.get_tensor_by_name("num_detections:0")
-                files =glob.glob(input_path)
-                print(files)
-                for file in files:
-                    print("Working on file {}".format(file))
-                    values = []
-                    cap = cv2.VideoCapture(file)
+                print("Working on file {}".format(input_path))
+                values = []
+                cap = cv2.VideoCapture(input_path)
+                ret, frame = cap.read()
+                while ret:
                     ret, frame = cap.read()
-                    while ret:
-                        ret, frame = cap.read()
-                        if frame is None:
-                            continue
-                        frame = cv2.flip(frame, 1)
-                        image = frame
-                        output = image.copy()
-                        img_ff, bin_mask, res = ff.find_hand_old(image.copy())
-                        image = cv2.cvtColor(res, cv2.COLOR_BGR2RGB)
-                        image = np.expand_dims(image, axis=0)
-                        (boxes, scores, labels, N) = sess.run(
-                            [boxesTensor, scoresTensor, classesTensor, numDetections],
-                            feed_dict={imageTensor: image})
-                        scores = np.squeeze(scores)
-                        prob = scores.max()
-                        thresholding = lambda x: x > 0.5
-                        side =thresholding(prob)
-                        values.append(side)
-                        dorsal_count = np.count_nonzero(values)
-                        palm_count = (np.size(values) - np.count_nonzero(values))
-                    print("Dorsal values {}".format(dorsal_count))
-                    print("Palm values {}".format(palm_count))
-                    if dorsal_count > palm_count:
-                        return 1 
-                    else:
-                         return 0
+                    if frame is None:
+                        continue
+                    frame = cv2.flip(frame, 1)
+                    image = frame
+                    output = image.copy()
+                    img_ff, bin_mask, res = ff.find_hand_old(image.copy())
+                    image = cv2.cvtColor(res, cv2.COLOR_BGR2RGB)
+                    image = np.expand_dims(image, axis=0)
+                    (boxes, scores, labels, N) = sess.run(
+                        [boxesTensor, scoresTensor, classesTensor, numDetections],
+                        feed_dict={imageTensor: image})
+                    scores = np.squeeze(scores)
+                    prob = scores.max()
+                    thresholding = lambda x: x > 0.5
+                    side =thresholding(prob)
+                    values.append(side)
+                    dorsal_count = np.count_nonzero(values)
+                    palm_count = (np.size(values) - np.count_nonzero(values))
+                print("Dorsal values {}".format(dorsal_count))
+                print("Palm values {}".format(palm_count))
+                if dorsal_count > palm_count:
+                    return 1 
+                else:
+                        return 0

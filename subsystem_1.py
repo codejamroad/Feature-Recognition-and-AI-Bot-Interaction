@@ -23,7 +23,6 @@ def start(testdata_path, enable_object_detection=False, framesToProcess = 100):
 
     # if 1 - Dorsal
     # if 0 - Palm
-    
     hand_side = nd.palm_dorsal_identifier(testdata_path)
 
     pointsCalculator.calculate_points(frames[:framesToProcess], hand_side, display=False)
