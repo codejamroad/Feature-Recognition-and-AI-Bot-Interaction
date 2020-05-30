@@ -31,7 +31,7 @@ def predict(test_data):
   #display(sample)
   sample = np.array(df_org)
   #display(sample)
-  print(sample.shape)
+  #print(sample.shape)
   sample = sample.reshape(-1,80,1)
 
   predicted_classes = loaded_model.predict(sample, verbose=2)
@@ -58,5 +58,5 @@ def predict(test_data):
       write_to_txt = "three_fingers_palm"
   if(label == 5):
       write_to_txt = "three_fingers_dorsal"
-
+  print("ouput to the file {}".format(write_to_txt))
   return write_to_txt
