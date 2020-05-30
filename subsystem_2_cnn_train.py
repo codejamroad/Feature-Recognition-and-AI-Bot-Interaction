@@ -1,18 +1,13 @@
 import pandas as pd
 from keras.models import Sequential
 from keras.layers import Dense
-from keras.wrappers.scikit_learn import KerasClassifier
 from keras.utils import np_utils
-from sklearn.model_selection import cross_val_score
-from sklearn.model_selection import KFold
 from sklearn.preprocessing import LabelEncoder
-from sklearn.pipeline import Pipeline
 import numpy as np
 from sklearn.model_selection import train_test_split
-from keras.layers import Dense, Dropout, Activation
-from keras.layers import Embedding
+from keras.layers import Dropout, Activation
 from keras.layers import Conv1D, MaxPooling1D
-from keras.layers import Dense, Dropout, Flatten
+from keras.layers import Flatten
 
 # load dataset
 df = pd.read_csv("Dataset_Subsystem_2.csv", header=None)

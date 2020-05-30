@@ -1,9 +1,7 @@
 from keras.models import model_from_json
 import numpy as np 
 import pandas as pd
-from tqdm import tqdm 
 import csv
-from sklearn.preprocessing import LabelEncoder
 
 def decode(datum):
   return np.argmax(datum)

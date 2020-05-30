@@ -3,7 +3,6 @@ import cv2
 import tensorflow.compat.v1 as tf
 tf.disable_v2_behavior()
 import datetime
-import argparse
 
 def detect_hands_create_boundingbox(input_path, display_frames = False):
     detection_graph, sess = detector_utils.load_inference_graph()

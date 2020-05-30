@@ -4,12 +4,9 @@
 # from object_detection.utils import label_map_util
 #import tensorflow as tf
 import tensorflow.compat.v1 as tf
-import find_finger as ff
 tf.disable_v2_behavior()
 import numpy as np
 import cv2
-from imutils.video import WebcamVideoStream
-
 
 args = {
     "model": "./model/export_model_008/frozen_inference_graph.pb",
@@ -21,6 +18,20 @@ args = {
     "class_model": "../model/class_model/p_class_model_1552620432_.h5"}
 
 COLORS = np.random.uniform(0, 255, size=(args["num_classes"], 3))
+
+def find_hand_old(frame):
+    img = frame.copy()
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    YCrCb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2YCrCb)
+    YCrCb_frame = cv2.GaussianBlur(YCrCb_frame, (3, 3), 0)
+    mask = cv2.inRange(YCrCb_frame, np.array([0, 127, 75]), np.array([255, 177, 130]))
+    bin_mask = mask
+
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
+    bin_mask = cv2.dilate(bin_mask, kernel, iterations=5)
+    res = cv2.bitwise_and(frame, frame, mask=bin_mask)
+
+    return img, bin_mask, res
 
 def palm_dorsal_identifier(input_path):
 
@@ -59,7 +70,7 @@ def palm_dorsal_identifier(input_path):
                 frame = cv2.flip(frame, 1)
                 image = frame
                 output = image.copy()
-                img_ff, bin_mask, res = ff.find_hand_old(image.copy())
+                img_ff, bin_mask, res = find_hand_old(image.copy())
                 image = cv2.cvtColor(res, cv2.COLOR_BGR2RGB)
                 image = np.expand_dims(image, axis=0)
                 (boxes, scores, labels, N) = sess.run(
