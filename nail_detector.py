@@ -139,7 +139,7 @@ def palm_dorsal_identifier(input_path, display= False):
                                     cv2.FONT_HERSHEY_SIMPLEX, 0.75, (77, 255, 9), 2)
                     cv2.imshow("Output", output)
                     cv2.waitKey(25)
-                
+
                 
                 prob = scores.max()
                 thresholding = lambda x: x > 0.5
@@ -147,12 +147,12 @@ def palm_dorsal_identifier(input_path, display= False):
                 values.append(side)
                 dorsal_count = np.count_nonzero(values)
                 palm_count = (np.size(values) - np.count_nonzero(values))
+            cv2.destroyAllWindows()
             print("Nail detector: Dorsal values {}".format(dorsal_count))
             print("Nail detector: Palm values {}".format(palm_count))
             if dorsal_count > palm_count:
                 print("Nail detector: predicts it is Dorsal")
                 return 1 
             else:
-                print("Nail detector: predicts it is Dorsal")
+                print("Nail detector: predicts it is Palm")
                 return 0
-        cv2.destroyAllWindows()
