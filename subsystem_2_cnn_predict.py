@@ -8,7 +8,6 @@ from sklearn.preprocessing import LabelEncoder
 def decode(datum):
   return np.argmax(datum)
 
-
 def predict(test_data):
   json_file = open('model_cnn.json', 'r')
   loaded_model_json = json_file.read()
@@ -20,18 +19,7 @@ def predict(test_data):
   loaded_model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
   df_org = pd.read_csv(test_data, header=None)
-  #df_org = df_org.loc[:,4:]
-  #df_org = df_org.iloc[250:300]
-  #sample = df_org.iloc[1:]
-  #for i in range(0,100):
-  #   for j in range(40,80):
-    #      df_org[i,j] = 0
-  #display(df_org)
-  #sample = df_org.iloc[0:100,0:80]
-  #display(sample)
   sample = np.array(df_org)
-  #display(sample)
-  #print(sample.shape)
   sample = sample.reshape(-1,80,1)
 
   predicted_classes = loaded_model.predict(sample, verbose=2)
