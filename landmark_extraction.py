@@ -44,8 +44,8 @@ def calculate_points(input_frames, hand_side, display= False):
                     if display:
                         cv2.circle(frame, (int(point[0]), int(point[1])), 6, (0, 255, 255), thickness=-1, lineType=cv2.FILLED)
                 else :
-                    points.append(0) #X
-                    points.append(0) #Y
+                    points.append(-1) #X
+                    points.append(-1) #Y
 
                 if display:
                     cv2.imshow('Output-Skeleton', frame)
@@ -60,5 +60,6 @@ def calculate_points(input_frames, hand_side, display= False):
 
             if display:
                 cv2.destroyAllWindows()
-            print("Time Taken for frame {}  = {}".format(k, time.time() - t))
+            print("Landmark Extraction: Time Taken for frame {}  = {}".format(k, time.time() - t))
+    print("Landmark Extraxtion: data flushed to csv")
     return output_file

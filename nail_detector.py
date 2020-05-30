@@ -33,12 +33,12 @@ def find_hand_old(frame):
 
     return img, bin_mask, res
 
-def palm_dorsal_identifier(input_path):
+def palm_dorsal_identifier(input_path, display= False):
 
     model = tf.Graph()
 
     with model.as_default():
-        print("> ====== loading NAIL frozen graph into memory")
+        print("Nail Detector: loading NAIL frozen graph into memory")
         graphDef = tf.GraphDef()
 
         with tf.gfile.GFile(args["model"], "rb") as f:
@@ -46,7 +46,7 @@ def palm_dorsal_identifier(input_path):
             graphDef.ParseFromString(serializedGraph)
             tf.import_graph_def(graphDef, name="")
         # sess = tf.Session(graph=graphDef)
-        print(">  ====== NAIL Inference graph loaded.")
+        print("Nail detector: NAIL Inference graph loaded.")
         # return graphDef, sess
 
 
@@ -59,7 +59,8 @@ def palm_dorsal_identifier(input_path):
             scoresTensor = model.get_tensor_by_name("detection_scores:0")
             classesTensor = model.get_tensor_by_name("detection_classes:0")
             numDetections = model.get_tensor_by_name("num_detections:0")
-            print("Working on file {}".format(input_path))
+            drawboxes = []
+            print("Nail Detector: Working on file {}".format(input_path))
             values = []
             cap = cv2.VideoCapture(input_path)
             ret, frame = cap.read()
@@ -70,22 +71,87 @@ def palm_dorsal_identifier(input_path):
                 frame = cv2.flip(frame, 1)
                 image = frame
                 output = image.copy()
+                (H, W) = image.shape[:2]
                 img_ff, bin_mask, res = find_hand_old(image.copy())
                 image = cv2.cvtColor(res, cv2.COLOR_BGR2RGB)
                 image = np.expand_dims(image, axis=0)
+
                 (boxes, scores, labels, N) = sess.run(
                     [boxesTensor, scoresTensor, classesTensor, numDetections],
                     feed_dict={imageTensor: image})
                 scores = np.squeeze(scores)
+                if display:
+                    boxes = np.squeeze(boxes)
+                    labels = np.squeeze(labels)
+                    boxnum = 0
+                    box_mid = (0, 0)
+                    # print("scores_shape:", scores.shape)
+                    for (box, score, label) in zip(boxes, scores, labels):
+                        # print(int(label))
+                        # if int(label) != 1:
+                        #     continue
+                        if score < args["min_confidence"]:
+                            continue
+                        # scale the bounding box from the range [0, 1] to [W, H]
+                        boxnum = boxnum + 1
+                        (startY, startX, endY, endX) = box
+                        startX = int(startX * W)
+                        startY = int(startY * H)
+                        endX = int(endX * W)
+                        endY = int(endY * H)
+                        X_mid = startX + int(abs(endX - startX) / 2)
+                        Y_mid = startY + int(abs(endY - startY) / 2)
+                        box_mid = (X_mid, Y_mid)
+                        # draw the prediction on the output image
+                        label_name = 'nail'
+                        # idx = int(label["id"]) - 1
+                        idx = 0
+                        label = "{}: {:.2f}".format(label_name, score)
+                        cv2.rectangle(output, (startX, startY), (endX, endY),
+                                        COLORS[idx], 2)
+                        y = startY - 10 if startY - 10 > 10 else startY + 10
+                        cv2.putText(output, label, (startX, y),
+                                    cv2.FONT_HERSHEY_SIMPLEX, 0.3, COLORS[idx], 1)
+                    # show the output image
+                    # print(boxnum)
+                    if box_mid == (0, 0):
+                        drawboxes.clear()
+                        cv2.putText(output, 'Nothing', (20, 50),
+                                    cv2.FONT_HERSHEY_SIMPLEX, 0.75, (77, 255, 9), 2)
+                    elif boxnum == 1:
+                        drawboxes.append(box_mid)
+                        if len(drawboxes) == 1:
+                            pp = drawboxes[0]
+                            cv2.circle(output, pp, 0, (0, 0, 0), thickness=3)
+                            # cv2.line(output, pt1, pt2, (0, 0, 0), 2, 2)
+                        if len(drawboxes) > 1:
+                            num_p = len(drawboxes)
+                            for i in range(1, num_p):
+                                pt1 = drawboxes[i - 1]
+                                pt2 = drawboxes[i]
+                                # cv2.circle(output, pp, 0, (0, 0, 0), thickness=3)
+                                cv2.line(output, pt1, pt2, (0, 0, 0), 2, 2)
+                        cv2.putText(output, 'Point', (20, 50),
+                                    cv2.FONT_HERSHEY_SIMPLEX, 0.75, (77, 255, 9), 2)
+                    else:
+                        drawboxes.clear()
+                        cv2.putText(output, 'Nothing', (20, 50),
+                                    cv2.FONT_HERSHEY_SIMPLEX, 0.75, (77, 255, 9), 2)
+                    cv2.imshow("Output", output)
+                    cv2.waitKey(0)
+                
+                cv2.destroyAllWindows()
                 prob = scores.max()
                 thresholding = lambda x: x > 0.5
                 side =thresholding(prob)
                 values.append(side)
                 dorsal_count = np.count_nonzero(values)
                 palm_count = (np.size(values) - np.count_nonzero(values))
-            print("Dorsal values {}".format(dorsal_count))
-            print("Palm values {}".format(palm_count))
+            print("Nail detector: Dorsal values {}".format(dorsal_count))
+            print("Nail detector: Palm values {}".format(palm_count))
             if dorsal_count > palm_count:
+                print("Nail detector: predicts it is Dorsal")
                 return 1 
             else:
-                    return 0
+                print("Nail detector: predicts it is Dorsal")
+                return 0
