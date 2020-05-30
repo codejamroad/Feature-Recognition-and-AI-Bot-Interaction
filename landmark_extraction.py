@@ -58,8 +58,9 @@ def calculate_points(input_frames, hand_side, display= False):
                 points_to_csv =  points + zerolistmaker(40) 
             writer.writerow(points_to_csv)
 
-            if display:
-                cv2.destroyAllWindows()
             print("Landmark Extraction: Time Taken for frame {}  = {}".format(k, time.time() - t))
+            
+    if display:
+                cv2.destroyAllWindows()
     print("Landmark Extraxtion: data flushed to csv")
     return output_file
